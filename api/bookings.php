@@ -16,10 +16,13 @@ switch ($method) {
         echo json_encode($bookingModel->getAll($userId, $newOnly));
         break;
     case 'POST':
-        $userId = authenticate();
+        $authData = authenticate();
+        $userId = $authData['firebase_uid']; // Ensure string from auth
         $data = json_decode(file_get_contents('php://input'), true);
-        $data['user_id'] = $userId;
+        error_log("Booking POST data: " . print_r($data, true)); // Debug log
+        $data['user_id'] = $userId; // Overwrite with authenticated UID
         $bookingId = $bookingModel->create($data);
+        error_log("Booking created with ID: $bookingId"); // Debug log
         http_response_code(201);
         echo json_encode(['id' => $bookingId]);
         break;

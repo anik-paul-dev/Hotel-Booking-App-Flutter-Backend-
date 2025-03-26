@@ -22,17 +22,16 @@ class Booking {
         $query = "INSERT INTO $this->table (user_id, room_id, room_name, price_per_night, check_in, check_out, total_amount, order_id, status, booking_date) 
                   VALUES (:user_id, :room_id, :room_name, :price_per_night, :check_in, :check_out, :total_amount, :order_id, :status, NOW())";
         $stmt = $this->conn->prepare($query);
-        $stmt->execute([
-            ':user_id' => $data['user_id'],
-            ':room_id' => $data['room_id'],
-            ':room_name' => $data['room_name'],
-            ':price_per_night' => $data['price_per_night'],
-            ':check_in' => $data['check_in'],
-            ':check_out' => $data['check_out'],
-            ':total_amount' => $data['total_amount'],
-            ':order_id' => $data['order_id'],
-            ':status' => $data['status'] ?? 'booked', // Default to 'booked' if not provided
-        ]);
+        $stmt->bindParam(':user_id', $data['user_id']);
+        $stmt->bindParam(':room_id', $data['room_id']);
+        $stmt->bindParam(':room_name', $data['room_name']);
+        $stmt->bindParam(':price_per_night', $data['price_per_night']);
+        $stmt->bindParam(':check_in', $data['check_in']);
+        $stmt->bindParam(':check_out', $data['check_out']);
+        $stmt->bindParam(':total_amount', $data['total_amount']);
+        $stmt->bindParam(':order_id', $data['order_id']);
+        $stmt->bindParam(':status', $data['status']);
+        $stmt->execute();
         return $this->conn->lastInsertId();
     }
 
