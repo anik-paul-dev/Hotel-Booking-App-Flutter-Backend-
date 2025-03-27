@@ -1,6 +1,13 @@
-<?php
+<!-- RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php/$1 [L] -->
+
+
+<!-- <?php
 require_once 'middleware/auth.php';
 
+// Apply CORS headers from middleware (removes redundancy)
 addCorsHeaders();
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -18,17 +25,11 @@ $routes = [
     'api/settings' => 'api/settings.php',
 ];
 
-$pathParts = explode('/', $uri);
-$baseRoute = count($pathParts) >= 2 ? implode('/', array_slice($pathParts, 0, 2)) : $uri;
-
-if (array_key_exists($baseRoute, $routes)) {
-    if (!isset($_SERVER['PATH_INFO'])) {
-        $_SERVER['PATH_INFO'] = '/' . $uri; // e.g., "/api/rooms/4"
-    }
-    require_once __DIR__ . '/' . $routes[$baseRoute];
+if (array_key_exists($uri, $routes)) {
+    require_once __DIR__ . '/' . $routes[$uri];
 } else {
     http_response_code(404);
-    header('Content-Type: application/json');
+    header('Content-Type: application/json'); // Ensure JSON response
     echo json_encode(['message' => 'Not Found']);
 }
-?>
+?> -->

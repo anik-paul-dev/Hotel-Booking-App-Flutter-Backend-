@@ -16,10 +16,18 @@ switch ($method) {
         echo json_encode($reviewModel->getAll($roomId));
         break;
     case 'POST':
-        $userId = authenticate();
+        $authData = authenticate();
+        $userId = $authData['firebase_uid'];
         $data = json_decode(file_get_contents('php://input'), true);
         $data['user_id'] = $userId;
         $reviewId = $reviewModel->create($data);
+        
+            // Update room rating
+        require_once __DIR__ . '/../models/Room.php';
+        $roomModel = new Room($db);
+        $averageRating = $reviewModel->getAverageRating($data['room_id']);
+        $roomModel->updateRating($data['room_id'], $averageRating);
+        
         http_response_code(201);
         echo json_encode(['id' => $reviewId]);
         break;

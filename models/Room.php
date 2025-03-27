@@ -96,6 +96,13 @@ class Room {
         $stmt->execute();
         return $stmt->rowCount();
     }
+
+    public function updateRating($id, $rating) {
+        $query = "UPDATE $this->table SET rating = :rating WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([':id' => $id, ':rating' => $rating]);
+        return $stmt->rowCount();
+    }
 }
 
 ?>
