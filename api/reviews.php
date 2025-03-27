@@ -13,7 +13,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 switch ($method) {
     case 'GET':
         $roomId = $_GET['room_id'] ?? null;
-        echo json_encode($reviewModel->getAll($roomId));
+        echo json_encode($reviewModel->getAllWithRoomName($roomId));
         break;
     case 'POST':
         $authData = authenticate();
@@ -22,7 +22,7 @@ switch ($method) {
         $data['user_id'] = $userId;
         $reviewId = $reviewModel->create($data);
         
-            // Update room rating
+        // Update room rating
         require_once __DIR__ . '/../models/Room.php';
         $roomModel = new Room($db);
         $averageRating = $reviewModel->getAverageRating($data['room_id']);
@@ -35,8 +35,21 @@ switch ($method) {
         authenticate(true); // Admin only
         $id = $_GET['id'] ?? null;
         if ($id) {
-            $reviewModel->delete($id);
-            echo json_encode(['message' => 'Review deleted']);
+            $result = $reviewModel->delete($id);
+            $response = ['message' => 'Review deleted']; // Original response
+            // Add rating update logic
+            if (is_numeric($result)) { // Check if result is room_id
+                require_once __DIR__ . '/../models/Room.php';
+                $roomModel = new Room($db);
+                $averageRating = $reviewModel->getAverageRating($result);
+                $roomModel->updateRating($result, $averageRating);
+                $response = [
+                    'message' => 'Review deleted and rating updated',
+                    'room_id' => $result,
+                    'new_average_rating' => $averageRating
+                ];
+            }
+            echo json_encode($response); // Single echo
         } else {
             http_response_code(400);
             echo json_encode(['message' => 'ID required']);

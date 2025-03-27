@@ -17,6 +17,17 @@ class Review {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getAllWithRoomName($roomId = null) {
+        $query = "SELECT r.*, rm.name AS room_name 
+                  FROM $this->table r 
+                  LEFT JOIN rooms rm ON r.room_id = rm.id";
+        if ($roomId) $query .= " WHERE r.room_id = :room_id";
+        $stmt = $this->conn->prepare($query);
+        if ($roomId) $stmt->bindParam(':room_id', $roomId);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function create($data) {
         $query = "INSERT INTO $this->table (user_id, user_name, room_id, rating, review_text) 
                   VALUES (:user_id, :user_name, :room_id, :rating, :review_text)";
@@ -33,11 +44,20 @@ class Review {
     }
 
     public function delete($id) {
+        // Fetch room_id before deletion
+        $roomQuery = "SELECT room_id FROM $this->table WHERE id = :id";
+        $roomStmt = $this->conn->prepare($roomQuery);
+        $roomStmt->bindParam(':id', $id);
+        $roomStmt->execute();
+        $row = $roomStmt->fetch(PDO::FETCH_ASSOC);
+        $roomId = $row ? $row['room_id'] : null;
+
+        // Original deletion logic
         $query = "DELETE FROM $this->table WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
         $stmt->execute();
-        return $stmt->rowCount();
+        return $roomId ? $roomId : $stmt->rowCount(); // Return room_id if available, else row count
     }
 
     public function getAverageRating($roomId) {
