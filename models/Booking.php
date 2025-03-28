@@ -15,7 +15,10 @@ class Booking {
         $stmt = $this->conn->prepare($query);
         if ($userId) $stmt->bindParam(':user_id', $userId);
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        error_log("Query executed: $query"); // Debug log
+        error_log("Results count: " . count($results)); // Debug log
+        return $results;
     }
 
     public function create($data) {
@@ -30,7 +33,7 @@ class Booking {
         $stmt->bindParam(':check_out', $data['check_out']);
         $stmt->bindParam(':total_amount', $data['total_amount']);
         $stmt->bindParam(':order_id', $data['order_id']);
-        $stmt->bindParam(':status', $data['status']);
+        $stmt->bindParam(':status', $data['status']); // Use status from request
         $stmt->execute();
         return $this->conn->lastInsertId();
     }
