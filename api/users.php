@@ -60,6 +60,26 @@ switch ($method) {
         echo json_encode(['message' => 'User created', 'id' => $userId, 'role' => $data['role'] ?? 'user', 'received_data' => $data]);
         break;
 
+    case 'PUT':
+        $authData = authenticate();
+        $firebaseUid = $authData['firebase_uid'];
+        $data = json_decode(file_get_contents('php://input'), true);
+        $updateData = array_filter([
+            'name' => $data['name'] ?? null,
+            'phone_number' => $data['phone_number'] ?? null,
+            'address' => $data['address'] ?? null,
+            'pincode' => $data['pincode'] ?? null,
+                'date_of_birth' => $data['date_of_birth'] ?? null,
+        ], function ($value) { return $value !== null; });
+        if (!empty($updateData)) {
+            $userModel->update($firebaseUid, $updateData);
+            echo json_encode(['message' => 'User updated']);
+        } else {
+            http_response_code(400);
+            echo json_encode(['message' => 'No fields to update']);
+        }
+        break;    
+
     default:
         http_response_code(405);
         echo json_encode(['error' => 'Method not allowed']);

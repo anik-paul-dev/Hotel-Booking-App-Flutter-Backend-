@@ -39,5 +39,19 @@ class User {
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function update($firebaseUid, $data) {
+        $setParts = [];
+        $params = [':firebase_uid' => $firebaseUid];
+        foreach ($data as $key => $value) {
+            $setParts[] = "$key = :$key";
+            $params[":$key"] = $value;
+        }
+        $setClause = implode(', ', $setParts);
+        $query = "UPDATE $this->table SET $setClause WHERE firebase_uid = :firebase_uid";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute($params);
+        return $stmt->rowCount();
+    }
 }
 ?>

@@ -7,6 +7,7 @@ $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = trim($uri, '/');
 
 $routes = [
+    'api/upload-image' => 'api/upload-image.php',
     'api/auth' => 'api/auth.php',
     'api/rooms' => 'api/rooms.php',
     'api/facilities' => 'api/facilities.php',
