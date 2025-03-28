@@ -140,3 +140,5 @@ CREATE TABLE queries (
     is_read TINYINT(1) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Added for consistency
 );
+
+ALTER TABLE bookings ADD COLUMN is_assigned TINYINT(1) DEFAULT 0 AFTER status;

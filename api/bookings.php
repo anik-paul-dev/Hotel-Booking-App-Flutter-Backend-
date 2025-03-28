@@ -4,10 +4,9 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../models/Booking.php';
 require_once __DIR__ . '/../middleware/auth.php';
 
-// Enable error logging, disable display for clean JSON output
-ini_set('display_errors', 0); // Prevent HTML warnings in response
+ini_set('display_errors', 0);
 ini_set('log_errors', 1);
-ini_set('error_log', __DIR__ . '/../logs/php_errors.log'); // Ensure logs go to a file
+ini_set('error_log', __DIR__ . '/../logs/php_errors.log');
 
 $db = (new Database())->connect();
 $bookingModel = new Booking($db);
@@ -19,7 +18,7 @@ switch ($method) {
         try {
             $authResult = authenticate();
             $isAdmin = isset($authResult['role']) && $authResult['role'] === 'admin';
-            $userId = isset($_GET['user_id']) ? $_GET['user_id'] : ($isAdmin ? null : ($authResult['firebase_uid'] ?? null)); // Null for admin, firebase_uid for users
+            $userId = isset($_GET['user_id']) ? $_GET['user_id'] : ($isAdmin ? null : ($authResult['firebase_uid'] ?? null));
             $newOnly = isset($_GET['new_only']) && $_GET['new_only'] === 'true';
             $bookings = $bookingModel->getAll($userId, $newOnly);
             error_log("Bookings fetched: " . count($bookings));
@@ -50,15 +49,21 @@ switch ($method) {
             authenticate();
             $id = $_GET['id'] ?? null;
             if ($id) {
-                $bookingModel->cancel($id);
-                echo json_encode(['message' => 'Booking cancelled']);
+                $data = json_decode(file_get_contents('php://input'), true);
+                if (isset($data['action']) && $data['action'] === 'assign') {
+                    $bookingModel->assign($id);
+                    echo json_encode(['message' => 'Booking assigned']);
+                } else {
+                    $bookingModel->cancel($id);
+                    echo json_encode(['message' => 'Booking cancelled']);
+                }
             } else {
                 http_response_code(400);
                 echo json_encode(['message' => 'ID required']);
             }
         } catch (Exception $e) {
             http_response_code(500);
-            echo json_encode(['error' => 'Failed to cancel booking: ' . $e->getMessage()]);
+            echo json_encode(['error' => 'Failed to process booking: ' . $e->getMessage()]);
         }
         break;
     default:
