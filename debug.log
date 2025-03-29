@@ -1,0 +1,12 @@
+Request: /api/serve-image?file=67e7c476ce820_o2.jpeg
+Looking for: C:\Database\htdocs\backend\api/../uploads/67e7c476ce820_o2.jpeg
+Serving: C:\Database\htdocs\backend\api/../uploads/67e7c476ce820_o2.jpeg
+Request: /api/serve-image?file=67e7ce26e1f3c_pn.jpg
+Looking for: C:\Database\htdocs\backend\api/../uploads/67e7ce26e1f3c_pn.jpg
+Serving: C:\Database\htdocs\backend\api/../uploads/67e7ce26e1f3c_pn.jpg
+Request: /api/serve-image?file=67e7c476ce820_o2.jpeg
+Looking for: C:\Database\htdocs\backend\api/../uploads/67e7c476ce820_o2.jpeg
+Serving: C:\Database\htdocs\backend\api/../uploads/67e7c476ce820_o2.jpeg
+Request: /api/serve-image?file=67e7d2d9b586c_sk3.jpg
+Looking for: C:\Database\htdocs\backend\api/../uploads/67e7d2d9b586c_sk3.jpg
+Serving: C:\Database\htdocs\backend\api/../uploads/67e7d2d9b586c_sk3.jpg

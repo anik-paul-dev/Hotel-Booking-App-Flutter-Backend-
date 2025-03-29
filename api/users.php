@@ -1,5 +1,5 @@
 <?php
-header('Content-Type: application/json'); // Keep this for response type
+header('Content-Type: application/json');
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../middleware/auth.php';
@@ -18,7 +18,6 @@ switch ($method) {
         if (isset($_GET['firebase_uid'])) {
             $user = $userModel->getByFirebaseUid($_GET['firebase_uid']);
             if ($user) {
-                // Allow users to fetch their own data or admins to fetch any
                 if ($user['firebase_uid'] === $authData['firebase_uid'] || $authData['role'] === 'admin') {
                     echo json_encode([$user]);
                 } else {
@@ -54,7 +53,6 @@ switch ($method) {
             echo json_encode(['error' => 'User already exists']);
             exit;
         }
-        // Pass all received data to create, let model handle it
         $userId = $userModel->create($data);
         http_response_code(201);
         echo json_encode(['message' => 'User created', 'id' => $userId, 'role' => $data['role'] ?? 'user', 'received_data' => $data]);
@@ -69,7 +67,8 @@ switch ($method) {
             'phone_number' => $data['phone_number'] ?? null,
             'address' => $data['address'] ?? null,
             'pincode' => $data['pincode'] ?? null,
-                'date_of_birth' => $data['date_of_birth'] ?? null,
+            'date_of_birth' => $data['date_of_birth'] ?? null,
+            'picture' => $data['picture'] ?? null, // Add picture to updateable fields
         ], function ($value) { return $value !== null; });
         if (!empty($updateData)) {
             $userModel->update($firebaseUid, $updateData);
@@ -78,7 +77,7 @@ switch ($method) {
             http_response_code(400);
             echo json_encode(['message' => 'No fields to update']);
         }
-        break;    
+        break;
 
     default:
         http_response_code(405);

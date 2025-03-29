@@ -2,3 +2,11 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php/$1 [L]
+
+# Add CORS headers for /uploads/ directory
+<IfModule mod_headers.c>
+    <FilesMatch "\.(jpeg|jpg|png|gif)$">
+        Header set Access-Control-Allow-Origin "http://localhost:64944"
+        Header set Access-Control-Allow-Methods "GET"
+    </FilesMatch>
+</IfModule>

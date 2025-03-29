@@ -17,6 +17,7 @@ $routes = [
     'api/features' => 'api/features.php',
     'api/carousel' => 'api/carousel.php',
     'api/settings' => 'api/settings.php',
+    'api/serve-image' => 'api/serve-image.php', // Added this line
 ];
 
 $pathParts = explode('/', $uri);
