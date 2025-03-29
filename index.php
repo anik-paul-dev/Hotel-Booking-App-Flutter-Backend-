@@ -18,6 +18,7 @@ $routes = [
     'api/carousel' => 'api/carousel.php',
     'api/settings' => 'api/settings.php',
     'api/serve-image' => 'api/serve-image.php', // Added this line
+    'api/queries' => 'api/queries.php',
 ];
 
 $pathParts = explode('/', $uri);

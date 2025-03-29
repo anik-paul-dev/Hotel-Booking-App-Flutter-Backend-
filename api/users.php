@@ -60,22 +60,37 @@ switch ($method) {
 
     case 'PUT':
         $authData = authenticate();
-        $firebaseUid = $authData['firebase_uid'];
         $data = json_decode(file_get_contents('php://input'), true);
+        if (!isset($_GET['firebase_uid']) && !isset($data['firebase_uid'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'firebase_uid is required']);
+            exit;
+        }
+        $firebaseUid = $_GET['firebase_uid'] ?? $data['firebase_uid'];
+        
+        // Allow all fields sent in the request, including is_verified and is_active
         $updateData = array_filter([
             'name' => $data['name'] ?? null,
             'phone_number' => $data['phone_number'] ?? null,
             'address' => $data['address'] ?? null,
             'pincode' => $data['pincode'] ?? null,
             'date_of_birth' => $data['date_of_birth'] ?? null,
-            'picture' => $data['picture'] ?? null, // Add picture to updateable fields
+            'picture' => $data['picture'] ?? null,
+            'is_verified' => isset($data['is_verified']) ? ($data['is_verified'] ? 1 : 0) : null,
+            'is_active' => isset($data['is_active']) ? ($data['is_active'] ? 1 : 0) : null,
         ], function ($value) { return $value !== null; });
+
         if (!empty($updateData)) {
-            $userModel->update($firebaseUid, $updateData);
-            echo json_encode(['message' => 'User updated']);
+            $rowsAffected = $userModel->update($firebaseUid, $updateData);
+            if ($rowsAffected > 0) {
+                echo json_encode(['message' => 'User updated']);
+            } else {
+                http_response_code(404);
+                echo json_encode(['message' => 'User not found or no changes made']);
+            }
         } else {
             http_response_code(400);
-            echo json_encode(['message' => 'No fields to update']);
+            echo json_encode(['message' => 'No valid fields to update']);
         }
         break;
 

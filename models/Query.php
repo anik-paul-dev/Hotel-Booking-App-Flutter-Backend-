@@ -8,7 +8,7 @@ class Query {
     }
 
     public function getAll() {
-        $query = "SELECT * FROM $this->table";
+        $query = "SELECT * FROM $this->table ORDER BY created_at DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -19,6 +19,12 @@ class Query {
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':is_read', $isRead, PDO::PARAM_INT);
         $stmt->bindParam(':id', $id);
+        $stmt->execute();
+    }
+
+    public function markAllAsRead() {
+        $query = "UPDATE $this->table SET is_read = 1 WHERE is_read = 0";
+        $stmt = $this->conn->prepare($query);
         $stmt->execute();
     }
 
@@ -44,4 +50,3 @@ class Query {
         return $this->conn->lastInsertId();
     }
 }
-?>

@@ -8,7 +8,8 @@ class User {
     }
     
     public function getAll() {
-        $query = "SELECT id, firebase_uid, name, email, phone_number, role FROM $this->table";
+        $query = "SELECT id, firebase_uid, name, email, phone_number, picture, address, pincode, date_of_birth, is_verified, is_active, created_at, role 
+                  FROM $this->table";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
