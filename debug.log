@@ -82,3 +82,9 @@ Serving: C:\Database\htdocs\backend\api/../uploads/67e7d2d9b586c_sk3.jpg
 Request: /api/serve-image?file=67e85be59b01b_g1.jpg
 Looking for: C:\Database\htdocs\backend\api/../uploads/67e85be59b01b_g1.jpg
 Serving: C:\Database\htdocs\backend\api/../uploads/67e85be59b01b_g1.jpg
+Request: /api/serve-image?file=67e7c476ce820_o2.jpeg
+Looking for: C:\Database\htdocs\backend\api/../uploads/67e7c476ce820_o2.jpeg
+Serving: C:\Database\htdocs\backend\api/../uploads/67e7c476ce820_o2.jpeg
+Request: /api/serve-image?file=67e7c476ce820_o2.jpeg
+Looking for: C:\Database\htdocs\backend\api/../uploads/67e7c476ce820_o2.jpeg
+Serving: C:\Database\htdocs\backend\api/../uploads/67e7c476ce820_o2.jpeg

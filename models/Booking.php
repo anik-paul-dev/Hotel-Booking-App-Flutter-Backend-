@@ -7,13 +7,17 @@ class Booking {
         $this->conn = $db;
     }
 
-    public function getAll($userId = null, $newOnly = false) {
+    public function getAll($userId = null, $newOnly = false, $roomId = null) {
         $query = "SELECT * FROM $this->table";
-        if ($userId) $query .= " WHERE user_id = :user_id";
-        if ($newOnly) $query .= ($userId ? " AND" : " WHERE") . " status = 'booked' AND booking_date > DATE_SUB(NOW(), INTERVAL 7 DAY)";
+        $conditions = [];
+        if ($userId) $conditions[] = "user_id = :user_id";
+        if ($roomId) $conditions[] = "room_id = :room_id";
+        if ($newOnly) $conditions[] = "status = 'booked' AND booking_date > DATE_SUB(NOW(), INTERVAL 7 DAY)";
+        if (!empty($conditions)) $query .= " WHERE " . implode(" AND ", $conditions);
         $query .= " ORDER BY booking_date DESC";
         $stmt = $this->conn->prepare($query);
         if ($userId) $stmt->bindParam(':user_id', $userId);
+        if ($roomId) $stmt->bindParam(':room_id', $roomId);
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
         error_log("Query executed: $query");

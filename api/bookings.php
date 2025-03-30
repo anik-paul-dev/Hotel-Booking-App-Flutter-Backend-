@@ -16,13 +16,24 @@ $method = $_SERVER['REQUEST_METHOD'];
 switch ($method) {
     case 'GET':
         try {
-            $authResult = authenticate();
-            $isAdmin = isset($authResult['role']) && $authResult['role'] === 'admin';
-            $userId = isset($_GET['user_id']) ? $_GET['user_id'] : ($isAdmin ? null : ($authResult['firebase_uid'] ?? null));
+            $roomId = isset($_GET['room_id']) ? $_GET['room_id'] : null;
+            $userId = isset($_GET['user_id']) ? $_GET['user_id'] : null;
             $newOnly = isset($_GET['new_only']) && $_GET['new_only'] === 'true';
-            $bookings = $bookingModel->getAll($userId, $newOnly);
-            error_log("Bookings fetched: " . count($bookings));
-            echo json_encode($bookings);
+
+            // If only room_id is provided, allow unauthenticated access for public availability check
+            if ($roomId && !$userId && !$newOnly) {
+                $bookings = $bookingModel->getAll(null, false, $roomId);
+                error_log("Public bookings fetched for room_id $roomId: " . count($bookings));
+                echo json_encode($bookings);
+            } else {
+                // Otherwise, require authentication
+                $authResult = authenticate();
+                $isAdmin = isset($authResult['role']) && $authResult['role'] === 'admin';
+                $userId = $userId ?: ($isAdmin ? null : ($authResult['firebase_uid'] ?? null));
+                $bookings = $bookingModel->getAll($userId, $newOnly, $roomId);
+                error_log("Bookings fetched: " . count($bookings));
+                echo json_encode($bookings);
+            }
         } catch (Exception $e) {
             http_response_code(500);
             echo json_encode(['error' => 'Server error: ' . $e->getMessage()]);
