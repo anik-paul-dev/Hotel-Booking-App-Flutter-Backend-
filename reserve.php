@@ -33,3 +33,36 @@ if (array_key_exists($uri, $routes)) {
     echo json_encode(['message' => 'Not Found']);
 }
 ?> -->
+
+
+
+
+
+
+
+
+
+
+
+
+-- Create the `settings` table
+CREATE TABLE `settings` (
+    `id` INT PRIMARY KEY DEFAULT 1, -- Fixed ID of 1 as per settings.php logic
+    `website_title` VARCHAR(255) NOT NULL DEFAULT '',
+    `about_us_description` TEXT NOT NULL DEFAULT '',
+    `shutdown_mode` TINYINT NOT NULL DEFAULT 0, -- 0 or 1 for boolean-like flag
+    `contacts` TEXT NOT NULL DEFAULT '[]', -- JSON-encoded array of contact objects
+    `social_media_links` TEXT NOT NULL DEFAULT '[]', -- JSON-encoded array of social media objects
+    `team_members` TEXT NOT NULL DEFAULT '[]', -- JSON-encoded array of team member objects
+    `website_name` VARCHAR(255) NOT NULL DEFAULT '',
+    `phone_number` VARCHAR(50) NOT NULL DEFAULT '',
+    `email` VARCHAR(255) NOT NULL DEFAULT '',
+    `address` TEXT NOT NULL DEFAULT '',
+    `facebook` VARCHAR(255) NOT NULL DEFAULT '',
+    `twitter` VARCHAR(255) NOT NULL DEFAULT '',
+    `instagram` VARCHAR(255) NOT NULL DEFAULT ''
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Insert a default row if needed (optional, since settings.php handles defaults)
+INSERT INTO `settings` (`id`) VALUES (1)
+ON DUPLICATE KEY UPDATE `id` = 1;

@@ -97,36 +97,30 @@ CREATE TABLE carousel_images (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Settings Table
-CREATE TABLE settings (
-    id INT PRIMARY KEY,
-    website_title VARCHAR(255) NOT NULL,
-    about_us_description TEXT NOT NULL,
-    shutdown_mode TINYINT(1) DEFAULT 0,
-    contacts JSON NOT NULL,
-    social_media_links JSON NOT NULL,
-    team_members JSON NOT NULL,
-    website_name VARCHAR(255),
-    phone_number VARCHAR(20),
-    email VARCHAR(255),
-    address TEXT,
-    facebook VARCHAR(255),
-    twitter VARCHAR(255),
-    instagram VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+-- Create the `settings` table with timestamps
+CREATE TABLE `settings` (
+    id INT PRIMARY KEY DEFAULT 1, -- Fixed ID of 1 as per settings.php logic
+    website_title VARCHAR(255) NOT NULL DEFAULT '',
+    about_us_description TEXT NOT NULL DEFAULT '',
+    shutdown_mode TINYINT NOT NULL DEFAULT 0, -- 0 or 1 for boolean-like flag
+    contacts TEXT NOT NULL DEFAULT '[]', -- JSON-encoded array of contact objects
+    social_media_links TEXT NOT NULL DEFAULT '[]', -- JSON-encoded array of social media objects
+    team_members TEXT NOT NULL DEFAULT '[]', -- JSON-encoded array of team member objects
+    image_url VARCHAR(255) NOT NULL DEFAULT '';
+    website_name VARCHAR(255) NOT NULL DEFAULT '',
+    phone_number VARCHAR(50) NOT NULL DEFAULT '',
+    email VARCHAR(255) NOT NULL DEFAULT '',
+    address TEXT NOT NULL DEFAULT '',
+    facebook VARCHAR(255) NOT NULL DEFAULT '',
+    twitter VARCHAR(255) NOT NULL DEFAULT '',
+    instagram VARCHAR(255) NOT NULL DEFAULT '',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Auto-set on insert
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Auto-update on change
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Insert initial settings data with usable defaults
-INSERT INTO settings (
-    id, website_title, about_us_description, shutdown_mode, 
-    contacts, social_media_links, team_members,
-    website_name, phone_number, email, address, facebook, twitter, instagram
-) VALUES (
-    1, '', '', 0,
-    '[]', '[]', '[]',
-    '', '', '', '', '', '', ''
-);
+-- Insert a default row if needed (optional, since settings.php handles defaults)
+INSERT INTO `settings` (`id`) VALUES (1)
+ON DUPLICATE KEY UPDATE `id` = 1;
 
 -- Queries Table
 CREATE TABLE queries (
