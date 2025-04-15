@@ -19,6 +19,7 @@ $routes = [
     'api/settings' => 'api/settings.php',
     'api/serve-image' => 'api/serve-image.php', // Added this line
     'api/queries' => 'api/queries.php',
+    'api/stats' => 'api/stats.php',
 ];
 
 $pathParts = explode('/', $uri);

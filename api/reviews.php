@@ -11,10 +11,23 @@ $reviewModel = new Review($db);
 $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
+    // case 'GET':
+    //     $roomId = $_GET['room_id'] ?? null;
+    //     echo json_encode($reviewModel->getAllWithRoomName($roomId));
+    //     break;
+    
     case 'GET':
-        $roomId = $_GET['room_id'] ?? null;
-        echo json_encode($reviewModel->getAllWithRoomName($roomId));
+        if (isset($_GET['testimonial'])) {
+            $minRating = $_GET['min_rating'] ?? 4;
+            $limit = $_GET['limit'] ?? 10;
+            echo json_encode($reviewModel->getRecentHighRatedReviews($minRating, $limit));
+        } else {
+            $roomId = $_GET['room_id'] ?? null;
+            echo json_encode($reviewModel->getAllWithRoomName($roomId));
+        }
         break;
+
+
     case 'POST':
         $authData = authenticate();
         $userId = $authData['firebase_uid'];

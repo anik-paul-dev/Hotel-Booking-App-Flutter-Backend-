@@ -18,12 +18,28 @@ class Review {
     }
 
     public function getAllWithRoomName($roomId = null) {
-        $query = "SELECT r.*, rm.name AS room_name 
+        $query = "SELECT r.*, rm.name AS room_name, u.picture AS user_picture 
                   FROM $this->table r 
-                  LEFT JOIN rooms rm ON r.room_id = rm.id";
+                  LEFT JOIN rooms rm ON r.room_id = rm.id 
+                  LEFT JOIN users u ON r.user_id = u.firebase_uid";
         if ($roomId) $query .= " WHERE r.room_id = :room_id";
         $stmt = $this->conn->prepare($query);
         if ($roomId) $stmt->bindParam(':room_id', $roomId);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getRecentHighRatedReviews($minRating = 4, $limit = 10) {
+        $query = "SELECT r.*, rm.name AS room_name, u.picture AS user_picture 
+                  FROM $this->table r 
+                  LEFT JOIN rooms rm ON r.room_id = rm.id 
+                  LEFT JOIN users u ON r.user_id = u.firebase_uid 
+                  WHERE r.rating >= :minRating 
+                  ORDER BY r.date DESC 
+                  LIMIT :limit";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':minRating', $minRating);
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -35,7 +51,7 @@ class Review {
         $params = [
             ':user_id' => is_scalar($data['user_id']) ? $data['user_id'] : '',
             ':user_name' => is_scalar($data['user_name']) ? $data['user_name'] : '',
-            ':room_id' => is_scalar($data['room_id']) ? $data['room_id'] : '', // Fixed
+            ':room_id' => is_scalar($data['room_id']) ? $data['room_id'] : '',
             ':rating' => is_scalar($data['rating']) ? $data['rating'] : 0,
             ':review_text' => is_scalar($data['review_text']) ? $data['review_text'] : ''
         ];
@@ -44,7 +60,6 @@ class Review {
     }
 
     public function delete($id) {
-        // Fetch room_id before deletion
         $roomQuery = "SELECT room_id FROM $this->table WHERE id = :id";
         $roomStmt = $this->conn->prepare($roomQuery);
         $roomStmt->bindParam(':id', $id);
@@ -52,12 +67,11 @@ class Review {
         $row = $roomStmt->fetch(PDO::FETCH_ASSOC);
         $roomId = $row ? $row['room_id'] : null;
 
-        // Original deletion logic
         $query = "DELETE FROM $this->table WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
         $stmt->execute();
-        return $roomId ? $roomId : $stmt->rowCount(); // Return room_id if available, else row count
+        return $roomId ? $roomId : $stmt->rowCount();
     }
 
     public function getAverageRating($roomId) {
